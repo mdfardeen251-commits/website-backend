@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · <span id="site-name">Admin</span></title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">📊</div>
+      <h1>Admin Dashboard</h1>
+      <p id="login-site" class="login-sub">Sign in to manage your website</p>
+      <form id="login-form">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="admin@example.com" required autocomplete="username" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <div id="login-error" class="error-msg hidden"></div>
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">📊</span>
+        <span id="sidebar-site" class="brand-text">Dashboard</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-view="dashboard">📈 Overview</a>
+        <a href="#contacts" class="nav-item" data-view="contacts">✉️ Contacts <span id="badge-contacts" class="badge hidden"></span></a>
+        <a href="#leads" class="nav-item" data-view="leads">🎯 Leads <span id="badge-leads" class="badge hidden"></span></a>
+        <a href="#newsletter" class="nav-item" data-view="newsletter">📧 Newsletter</a>
+        <a href="#content" class="nav-item" data-view="content">📝 Content</a>
+        <a href="#settings" class="nav-item" data-view="settings">⚙️ Settings</a>
+      </nav>
+      <button id="logout-btn" class="logout-btn">🚪 Logout</button>
+    </aside>
+
+    <main class="main">
+      <!-- OVERVIEW -->
+      <section id="view-dashboard" class="view active">
+        <header class="view-header">
+          <h2>Overview</h2>
+          <button class="btn btn-ghost" onclick="App.refreshDashboard()">↻ Refresh</button>
+        </header>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="recent-section">
+          <h3>Recent Messages</h3>
+          <div id="recent-contacts" class="recent-list"></div>
+        </div>
+      </section>
+
+      <!-- CONTACTS -->
+      <section id="view-contacts" class="view">
+        <header class="view-header">
+          <h2>Contact Messages</h2>
+          <div class="header-actions">
+            <button class="btn btn-ghost" onclick="App.toggleUnread()">Show unread only</button>
+            <button class="btn btn-ghost" onclick="App.exportCsv('contacts')">⬇ Export CSV</button>
+          </div>
+        </header>
+        <div id="contacts-table" class="data-table-wrap"></div>
+      </section>
+
+      <!-- LEADS -->
+      <section id="view-leads" class="view">
+        <header class="view-header">
+          <h2>Business Leads</h2>
+          <button class="btn btn-ghost" onclick="App.exportCsv('leads')">⬇ Export CSV</button>
+        </header>
+        <div id="leads-table" class="data-table-wrap"></div>
+      </section>
+
+      <!-- NEWSLETTER -->
+      <section id="view-newsletter" class="view">
+        <header class="view-header">
+          <h2>Newsletter Subscribers</h2>
+          <div class="header-actions">
+            <button class="btn btn-ghost" onclick="App.exportCsv('newsletter')">⬇ Export CSV</button>
+          </div>
+        </header>
+        <div id="newsletter-table" class="data-table-wrap"></div>
+      </section>
+
+      <!-- CONTENT -->
+      <section id="view-content" class="view">
+        <header class="view-header">
+          <h2>Website Content</h2>
+        </header>
+        <p class="hint">Edit the text below and it will be available to your website via the API. Use the section key in your frontend code.</p>
+        <div id="content-list" class="content-list"></div>
+        <div class="content-form">
+          <h3>Add new content block</h3>
+          <div class="field-row">
+            <input type="text" id="content-section" placeholder="section key (e.g. hero_title)" />
+            <input type="text" id="content-value" placeholder="value (text or HTML)" />
+            <button class="btn btn-primary" onclick="App.addContent()">＋ Add</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="view-settings" class="view">
+        <header class="view-header"><h2>Settings</h2></header>
+        <div class="card">
+          <h3>Change Password</h3>
+          <form id="password-form" class="settings-form">
+            <div class="field">
+              <label>Current Password</label>
+              <input type="password" id="current-password" required autocomplete="current-password" />
+            </div>
+            <div class="field">
+              <label>New Password</label>
+              <input type="password" id="new-password" required autocomplete="new-password" minlength="8" />
+            </div>
+            <div id="password-msg" class="msg hidden"></div>
+            <button type="submit" class="btn btn-primary">Update Password</button>
+          </form>
+        </div>
+        <div class="card">
+          <h3>API & Integration</h3>
+          <p class="hint">Use these endpoints in your Surge frontend to send data here:</p>
+          <pre class="code-block">POST /api/public/contact     — contact form
+POST /api/public/lead        — business inquiry form
+POST /api/public/newsletter  — newsletter signup
+GET  /api/content            — read website content</pre>
+          <p class="hint">Base URL: <code id="base-url"></code></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="App.closeModal()"></div>
+    <div class="modal-card" id="modal-card"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

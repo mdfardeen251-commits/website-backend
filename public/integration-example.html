@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Integration Examples</title>
+  <style>
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 40px 20px; line-height: 1.6; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    h1 { margin-bottom: 8px; }
+    .lead { color: #64748b; margin-bottom: 32px; }
+    .card { background: #fff; border-radius: 12px; padding: 24px 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .card h2 { font-size: 18px; margin-bottom: 4px; }
+    .card .desc { color: #64748b; font-size: 14px; margin-bottom: 16px; }
+    pre { background: #0f172a; color: #e2e8f0; padding: 18px; border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+    .tag { display: inline-block; background: #eef2ff; color: #4f46e5; padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+    .note { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-top: 12px; }
+    form { display: grid; gap: 12px; max-width: 400px; }
+    form label { font-size: 13px; font-weight: 600; }
+    form input, form textarea { padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+    form button { background: #6366f1; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    form button:hover { background: #4f46e5; }
+    .ok { color: #10b981; font-weight: 600; }
+    .err { color: #ef4444; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🔌 Frontend Integration Guide</h1>
+    <p class="lead">Copy these code snippets into your Surge website to connect it to the backend.</p>
+
+    <div class="note">
+      Replace <strong>YOUR_BACKEND_URL</strong> with your deployed backend URL
+      (e.g. <code>https://website-backend.onrender.com</code>).
+      For local testing use <code>http://localhost:3000</code>.
+    </div>
+
+    <!-- ───────── CONTACT FORM ───────── -->
+    <div class="card">
+      <h2>1. Contact Form <span class="tag">POST /api/public/contact</span></h2>
+      <p class="desc">A working live demo — submit and it saves to the database.</p>
+
+      <form id="contact-form">
+        <div><label>Name</label><input type="text" id="c-name" required /></div>
+        <div><label>Email</label><input type="email" id="c-email" required /></div>
+        <div><label>Phone</label><input type="text" id="c-phone" /></div>
+        <div><label>Message</label><textarea id="c-message" required></textarea></div>
+        <button type="submit">Send Message</button>
+        <div id="contact-result"></div>
+      </form>
+
+      <pre>// Add this to your website's JS
+document.getElementById('contact-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    name:    form.querySelector('[name="name"]').value,
+    email:   form.querySelector('[name="email"]').value,
+    phone:   form.querySelector('[name="phone"]').value,
+    message: form.querySelector('[name="message"]').value,
+  };
+  const res = await fetch('YOUR_BACKEND_URL/api/public/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (res.ok) alert('Message sent! We will get back to you.');
+  else        alert('Something went wrong. Please try again.');
+});</pre>
+    </div>
+
+    <!-- ───────── NEWSLETTER ───────── -->
+    <div class="card">
+      <h2>2. Newsletter Signup <span class="tag">POST /api/public/newsletter</span></h2>
+      <p class="desc">One-field email signup.</p>
+      <pre>const res = await fetch('YOUR_BACKEND_URL/api/public/newsletter', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'user@example.com' }),
+});</pre>
+    </div>
+
+    <!-- ───────── LEAD FORM ───────── -->
+    <div class="card">
+      <h2>3. Inquiry / Quote Form <span class="tag">POST /api/public/lead</span></h2>
+      <p class="desc">Capture detailed business leads.</p>
+      <pre>const res = await fetch('YOUR_BACKEND_URL/api/public/lead', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name:    'Jane Doe',
+    email:   'jane@company.com',
+    phone:   '+1 555 123 4567',
+    company: 'Acme Inc',
+    service: 'Web Development',
+    budget:  '$5000-$10000',
+    message: 'We need a new website for...',
+  }),
+});</pre>
+    </div>
+
+    <!-- ───────── READ CONTENT ───────── -->
+    <div class="card">
+      <h2>4. Read Website Content <span class="tag">GET /api/content</span></h2>
+      <p class="desc">Edit text in the dashboard, display it on your site.</p>
+      <pre>// Fetch all content blocks edited in the dashboard
+const res = await fetch('YOUR_BACKEND_URL/api/content');
+const { content } = await res.json();
+// content = [{ section: 'hero_title', value: 'Welcome!', ... }, ...]
+
+// Or fetch one specific block:
+const res2 = await fetch('YOUR_BACKEND_URL/api/content/hero_title');
+const { content: block } = await res2.json();
+document.querySelector('h1').textContent = block.value;</pre>
+    </div>
+
+    <div class="card">
+      <h2>📌 Important Notes</h2>
+      <ul style="padding-left: 20px; color: #475569;">
+        <li>Set <code>CORS_ORIGIN</code> in your backend's <code>.env</code> to your Surge domain.</li>
+        <li>All public endpoints work without authentication — they're meant for your website visitors.</li>
+        <li>The admin dashboard is protected (login required) — never expose admin credentials in frontend code.</li>
+        <li>Forms validate input and return helpful errors in JSON.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Live demo — uses same-origin backend when served by Express
+    const API = window.location.origin + '/api';
+    document.getElementById('contact-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const result = document.getElementById('contact-result');
+      result.innerHTML = '<span>Sending…</span>';
+      try {
+        const res = await fetch(`${API}/public/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('c-name').value,
+            email: document.getElementById('c-email').value,
+            phone: document.getElementById('c-phone').value,
+            message: document.getElementById('c-message').value,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          result.innerHTML = '<span class="ok">✓ Saved! Check the dashboard → Contacts</span>';
+          e.target.reset();
+        } else {
+          result.innerHTML = `<span class="err">✗ ${data.error || 'Failed'}</span>`;
+        }
+      } catch (err) {
+        result.innerHTML = `<span class="err">✗ ${err.message}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>

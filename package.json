@@ -1,0 +1,27 @@
+{
+  "name": "website-backend-dashboard",
+  "version": "1.0.0",
+  "description": "Backend + Admin Dashboard for a business website — contacts, leads, newsletter, and content management",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "init-db": "node src/db/init.js",
+    "test": "node run-tests.mjs"
+  },
+  "keywords": ["express", "postgresql", "dashboard", "cms", "admin"],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.0",
+    "zod": "^3.23.8"
+  }
+}
