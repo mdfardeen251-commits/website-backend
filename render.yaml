@@ -1,0 +1,30 @@
+# Render deployment config — https://render.com
+# 1. Push this project to GitHub
+# 2. On Render: New → Blueprint → select your repo (uses this render.yaml)
+# 3. Set DATABASE_URL, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, CORS_ORIGIN env vars in Render
+
+services:
+  - type: web
+    name: website-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true            # Render creates a random secret
+      - key: DATABASE_URL
+        # Set this to your Supabase / Neon / Render Postgres connection string
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@yourwebsite.com
+      - key: ADMIN_PASSWORD
+        generateValue: true            # Render creates a random password
+      - key: CORS_ORIGIN
+        # Your Surge frontend domain(s), e.g. https://my-site.surge.sh
+        value: "*"
+      - key: SITE_NAME
+        value: My Website
